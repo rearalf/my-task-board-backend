@@ -1,0 +1,12 @@
+echo 'Please be patient, this may take a while'
+echo 'First, lets check the code style or linting errors :art:'
+echo ''
+
+npx lint-staged || {
+  echo 'Linting failed, please fix the errors and try again'
+  exit 1
+}
+
+echo ''
+echo "Now we'll run some task for you :robot_face:"
+echo 'All good, you can commit now :tada:'

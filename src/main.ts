@@ -10,6 +10,8 @@ import {
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('v1/api');
+
   const config = new DocumentBuilder()
     .setTitle('Cats example')
     .setDescription('The cats API description')
@@ -17,7 +19,7 @@ async function bootstrap(): Promise<void> {
     .build();
   const documentFactory: () => OpenAPIObject = () =>
     SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('api/documentation', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
 }

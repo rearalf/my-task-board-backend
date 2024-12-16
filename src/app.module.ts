@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 
 import { JoiValidationSchema } from './config/joi.validation';
 import { EnvConfiguration } from './config/env.config';
+import { TaskModule } from './task/task.module';
 import typeorm from './config/typeorm';
 
 @Module({
@@ -21,6 +22,7 @@ import typeorm from './config/typeorm';
       }),
       inject: [ConfigService],
     }),
+    TaskModule,
   ],
   controllers: [],
   providers: [],

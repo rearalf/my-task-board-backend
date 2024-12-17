@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { Task } from './entities/task.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class TaskService {
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  constructor(
+    @InjectRepository(Task)
+    private readonly taskRepository: Repository<Task>,
+  ) {}
+
+  async create(createTaskDto: CreateTaskDto): Promise<Task> {
+    const createdTask = this.taskRepository.create(createTaskDto);
+    const savedTask = await this.taskRepository.save(createdTask);
+    return savedTask;
   }
 
-  findAll() {
-    return `This action returns all task`;
+  async findAll(): Promise<Task[]> {
+    const tasks = await this.taskRepository.find();
+    return tasks;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: number): Promise<Task> {
+    const task = await this.taskRepository.findOneBy({ id });
+    return task;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(
+    id: number,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<UpdateResult> {
+    const taskExists = await this.taskRepository.findOneBy({ id });
+
+    if (!taskExists) throw new NotFoundException(`Task not found`);
+
+    const updateTask = await this.taskRepository
+      .createQueryBuilder()
+      .update(Task)
+      .set({
+        ...updateTaskDto,
+      })
+      .where('id = :id', { id })
+      .returning('*')
+      .execute();
+
+    return updateTask;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(id: number): Promise<UpdateResult> {
+    const taskExists = await this.taskRepository.findOneBy({ id });
+
+    if (!taskExists) throw new NotFoundException(`Task not found`);
+
+    const softDeleteTask = await this.taskRepository
+      .createQueryBuilder()
+      .softDelete()
+      .where('id = :id', { id })
+      .returning('*')
+      .execute();
+
+    return softDeleteTask;
   }
 }

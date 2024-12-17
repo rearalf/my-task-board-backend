@@ -7,10 +7,19 @@ import {
   type OpenAPIObject,
 } from '@nestjs/swagger';
 
+import { ValidationPipe } from '@nestjs/common';
+
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('v1/api');
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Cats example')

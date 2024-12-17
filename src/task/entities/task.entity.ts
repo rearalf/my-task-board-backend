@@ -1,3 +1,4 @@
+import { TaskStatus } from 'src/interfaces/interfaces';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Entity,
@@ -7,12 +8,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
 } from 'typeorm';
-
-export enum TaskStatus {
-  WONT_DO = 'wont_do',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-}
 
 @Entity()
 export class Task {
@@ -35,7 +30,10 @@ export class Task {
     description:
       "Task status where it can be null or won't do, in progress or completed",
   })
-  @Column({ type: 'enum', enum: TaskStatus, nullable: true })
+  @Column({
+    type: 'text',
+    default: TaskStatus.PENDING,
+  })
   status: TaskStatus;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })

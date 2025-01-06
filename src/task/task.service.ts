@@ -19,7 +19,11 @@ export class TaskService {
   }
 
   async findAll(): Promise<Task[]> {
-    const tasks = await this.taskRepository.find();
+    const tasks = await this.taskRepository.find({
+      order: {
+        create_at: 'ASC',
+      },
+    });
     return tasks;
   }
 
